@@ -73,6 +73,8 @@ function uninstall()
 
 	rm -rf $PREFIX/usr/include/c++/v1
 	rm -rf $PREFIX/usr/lib/libc++*
+
+	rm -rf $PREFIX/usr/lib/libgtest*
 }
 
 function print_ignore_build_msg()
