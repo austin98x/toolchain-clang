@@ -223,12 +223,26 @@ function build_libcxx()
 	prepare_package ${_PACKAGE} ${_URL} libcxx "-$step"
 	cd "$dir"
 
+
+	_gcc_ver=`LANGUAGE=en_US ${GXX} --version | grep ^g++ | sed 's/^.* //g' | sed 's#\([0-9]\.[0-9]\)\.[0-9]#\1#'`
+	# FIXME gcc's target name is not same as system's folder name on some paltform.
+	_gcc_target=`LANGUAGE=en_US ${GXX} -v 2>&1 | grep "Target: " | cut -d' ' -f2`
+	if [ ! -d "/usr/include/${_gcc_target}" ] ; then
+		if [ -d "/usr/include/i386-linux-gnu" ] ; then
+			_gcc_target="i386-linux-gnu"
+		elif [ -d "/usr/include/i586-linux-gnu" ] ; then
+			_gcc_target="i586-linux-gnu"
+		elif [ -d "/usr/include/i686-linux-gnu" ] ; then
+			_gcc_target="i686-linux-gnu"
+		else
+			echo "can not find include folder!"
+			return
+		fi
+	fi
+
 	case $step in
 		base)
-			_CXXABI=libsupc++
-			_gcc_ver=`LANGUAGE=en_US ${GXX} --version | grep ^g++ | sed 's/^.* //g' | sed 's#\([0-9]\.[0-9]\)\.[0-9]#\1#'`
-			_gcc_target=`LANGUAGE=en_US ${GXX} -v 2>&1 | grep "Target: " | cut -d' ' -f2`
-			# FIXME
+			_CXXABI=libsupc++		
 			_CXXABI_PATHS_FLAG="-DLIBCXX_LIBSUPCXX_INCLUDE_PATHS=/usr/include/c++/${_gcc_ver};/usr/include/c++/${_gcc_ver}/${_gcc_target};/usr/include/${_gcc_target}/c++/${_gcc_ver}"
 			;;
 		final)
