@@ -43,6 +43,38 @@ function clean()
 	rm -f .succeeded
 }
 
+function uninstall()
+{
+	rm -rf $PREFIX/usr/include/llvm
+	rm -rf $PREFIX/usr/include/llvm-c
+	rm -rf $PREFIX/usr/include/clang
+	rm -rf $PREFIX/usr/include/clang-c
+	rm -rf $PREFIX/usr/include/cxxabi
+	rm -rf $PREFIX/usr/lib/libLLVM*
+	rm -rf $PREFIX/usr/lib/llvm*
+	rm -rf $PREFIX/usr/lib/LLVM*
+	rm -rf $PREFIX/usr/lib/clang
+	rm -rf $PREFIX/usr/lib/libclang*
+	rm -rf $PREFIX/usr/lib/libLTO*
+	rm -rf $PREFIX/usr/lib/BugpointPasses.so
+	rm -rf $PREFIX/usr/bin/llvm*
+	rm -rf $PREFIX/usr/bin/clang*
+	rm -rf $PREFIX/usr/bin/llc
+	rm -rf $PREFIX/usr/bin/lli
+	rm -rf $PREFIX/usr/bin/macho-dump
+	rm -rf $PREFIX/usr/bin/bugpoint
+	rm -rf $PREFIX/usr/bin/verify-uselistorder
+	rm -rf $PREFIX/usr/bin/obj2yaml
+	rm -rf $PREFIX/usr/bin/yaml2obj
+	rm -rf $PREFIX/usr/bin/git-clang-format
+	rm -rf $PREFIX/usr/bin/opt
+	rm -rf $PREFIX/usr/share/clang
+	rm -rf $PREFIX/usr/share/llvm
+
+	rm -rf $PREFIX/usr/include/c++/v1
+	rm -rf $PREFIX/usr/lib/libc++*
+}
+
 function print_ignore_build_msg()
 {
 	package=$1
@@ -328,6 +360,7 @@ function usage()
 	echo "[-p prefix] custom prefix"
 	echo "[-c] use specify libc"
 	echo "[-v version] choose specify version of clang"
+	echo "[-u] uninstall clang"
 }
 #
 ###############################################################################
@@ -347,7 +380,7 @@ BUILD_LIBC=0
 
 CLANG_VER=3.7.1 #default to 3.7.1
 
-while getopts p:c:v flag; do
+while getopts p:c:v:u flag; do
 	case $flag in
 		p)
 			PREFIX=$OPTARG
@@ -357,6 +390,10 @@ while getopts p:c:v flag; do
 			;;
 		v)
 			CLANG_VER=$OPTARG
+			;;
+		u)
+			uninstall
+			exit 0
 			;;
 		*)
 			usage
