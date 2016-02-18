@@ -37,6 +37,12 @@ function build_and_install()
 	make $extra_opt install
 }
 
+function clean()
+{
+	make clean
+	rm -f .succeeded
+}
+
 function print_ignore_build_msg()
 {
 	package=$1
@@ -174,7 +180,7 @@ function build_clang()
 		return
 	fi
 
-	_VER=3.6.2
+	_VER=${CLANG_VER}
 	_PACKAGE_LLVM=llvm-${_VER}.src.tar.xz
 	_PACKAGE_CFE=cfe-${_VER}.src.tar.xz
 	_PACKAGE_CRT=compiler-rt-${_VER}.src.tar.xz
@@ -215,7 +221,7 @@ function build_libcxx()
 		return
 	fi
 
-	_VER=3.6.2
+	_VER=${CLANG_VER}
 	_PACKAGE=libcxx-${_VER}.src.tar.xz
 	_URL=${LLVM_URL}/${_VER}
 
@@ -281,7 +287,7 @@ function build_libcxxabi()
 		return
 	fi
 
-	_VER=3.6.2
+	_VER=${CLANG_VER}
 	_PACKAGE=libcxxabi-${_VER}.src.tar.xz
 	_URL=${LLVM_URL}/${_VER}
 
@@ -311,6 +317,7 @@ function usage()
 	echo "build-clang.sh [options]"
 	echo "[-p prefix] custom prefix"
 	echo "[-c] use specify libc"
+	echo "[-v version] choose specify version of clang"
 }
 #
 ###############################################################################
@@ -328,13 +335,18 @@ LLVM_URL=http://llvm.org/releases
 
 BUILD_LIBC=0
 
-while getopts p:c flag; do
+CLANG_VER=3.7.1 #default to 3.7.1
+
+while getopts p:c:v flag; do
 	case $flag in
 		p)
 			PREFIX=$OPTARG
 			;;
 		c)
 			BUILD_LIBC=1
+			;;
+		v)
+			CLANG_VER=$OPTARG
 			;;
 		*)
 			usage
