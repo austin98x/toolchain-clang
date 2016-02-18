@@ -229,7 +229,6 @@ function build_libcxx()
 	prepare_package ${_PACKAGE} ${_URL} libcxx "-$step"
 	cd "$dir"
 
-
 	_gcc_ver=`LANGUAGE=en_US ${GXX} --version | grep ^g++ | sed 's/^.* //g' | sed 's#\([0-9]\.[0-9]\)\.[0-9]#\1#'`
 	# FIXME gcc's target name is not same as system's folder name on some paltform.
 	_gcc_target=`LANGUAGE=en_US ${GXX} -v 2>&1 | grep "Target: " | cut -d' ' -f2`
@@ -246,14 +245,25 @@ function build_libcxx()
 		fi
 	fi
 
+	major=`echo $_VER | cut -d'.' -f1`
+	minor=`echo $_VER | cut -d'.' -f2`
+	if ([ "$major" -ge "3" ] && [ "$minor" -ge "7" ]) then
+		_LIBSUPCXX_CMAKE_DEF="-DLIBCXX_CXX_ABI_INCLUDE_PATHS"
+		_LIBCXX_CMAKE_DEF="-DLIBCXX_CXX_ABI_INCLUDE_PATHS"
+	else
+		_LIBSUPCXX_CMAKE_DEF="-DLIBCXX_LIBSUPCXX_INCLUDE_PATHS"
+		_LIBCXX_CMAKE_DEF="-DLIBCXX_LIBCXXABI_INCLUDE_PATHS"
+	fi
+
 	case $step in
 		base)
 			_CXXABI=libsupc++		
-			_CXXABI_PATHS_FLAG="-DLIBCXX_LIBSUPCXX_INCLUDE_PATHS=/usr/include/c++/${_gcc_ver};/usr/include/c++/${_gcc_ver}/${_gcc_target};/usr/include/${_gcc_target}/c++/${_gcc_ver}"
+			#_CXXABI=libstdc++	
+			_CXXABI_PATHS_FLAG="${_LIBSUPCXX_CMAKE_DEF}=/usr/include/c++/${_gcc_ver};/usr/include/c++/${_gcc_ver}/${_gcc_target};/usr/include/${_gcc_target}/c++/${_gcc_ver}"
 			;;
 		final)
 			_CXXABI=libcxxabi
-			_CXXABI_PATHS_FLAG="-DLIBCXX_LIBCXXABI_INCLUDE_PATHS=$PREFIX/usr/include/cxxabi"
+			_CXXABI_PATHS_FLAG="${_LIBCXX_CMAKE_DEF}=$PREFIX/usr/include/cxxabi"
 			;;
 		*)
 			echo "Unkown build step for libcxx: $step"
