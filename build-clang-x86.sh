@@ -358,10 +358,10 @@ function build_libcxxabi()
 #
 function usage()
 {
-	echo "build-clang.sh [options]"
+	echo "Usage: $1 [options]"
 	echo "[-p prefix] custom prefix"
-	echo "[-c] use specify libc"
 	echo "[-v version] choose specify version of clang"
+	echo "[-c] use specify libc"
 	echo "[-u] uninstall clang"
 }
 #
@@ -398,7 +398,7 @@ while getopts p:c:v:u flag; do
 			exit 0
 			;;
 		*)
-			usage
+			usage $0
 			exit 0
 			;;
 	esac
