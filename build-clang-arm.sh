@@ -72,8 +72,9 @@ function build_binutils()
 			--with-sysroot=${_SYSROOT}	\
 			--target=${_TARGET}	\
 			--enable-threads	\
-			--enable-shared	\
-			--enable-multilib	\
+			--disable-shared	\
+			--enable-static	\
+			--disable-multilib	\
 			--disable-werror
 
 	build_and_install MAKEINFO=true
@@ -211,8 +212,6 @@ function build_gcc()
 	_COMMON_CFG="--prefix=${_HOST_DIR}/usr	\
 			--with-sysroot=${_SYSROOT}	\
 			--target=${_TARGET}	\
-			--with-arch=${_ARCH}	\
-			--with-abi=${_ABI}	\
 			--with-gmp=${_HOST_DIR}/usr	\
 			--with-mpfr=${_HOST_DIR}/usr	\
 			--with-mpc=${_HOST_DIR}/usr	\
@@ -294,7 +293,7 @@ function build_linux_headers()
 	dir="${_BUILD_DIR}/linux"
 
 	if [ -f "$dir/.succeeded" ] ; then
-		print_ignore_build_msg linux
+		print_ignore_build_msg headers
 		return
 	fi
 
@@ -304,7 +303,7 @@ function build_linux_headers()
 	cp -ar "${_SOURCE_DIR}"/linux/* "${dir}"
 
 	cd $dir
-	make -j`nproc` ARCH=mips INSTALL_HDR_PATH=${_SYSROOT}/usr headers_install
+	make -j`nproc` ARCH=arm64 INSTALL_HDR_PATH=${_SYSROOT}/usr headers_install
 	mark_build_succeeded
 	cd -
 }
