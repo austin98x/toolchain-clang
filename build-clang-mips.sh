@@ -295,7 +295,7 @@ function build_linux_headers()
 	dir="${_BUILD_DIR}/linux"
 
 	if [ -f "$dir/.succeeded" ] ; then
-		print_ignore_build_msg linux
+		print_ignore_build_msg headers
 		return
 	fi
 
