@@ -46,6 +46,46 @@ function mark_build_succeeded()
 {
 	touch .succeeded
 }
+
+function precheck()
+{
+	if ! which gcc > /dev/null ; then
+		echo "No gcc found"
+		exit 1
+	fi
+
+	if ! which g++ > /dev/null ; then
+		echo "No g++ found"
+		exit 1
+	fi
+
+	ver=`gcc --version | grep ^gcc | sed 's/^.* //g'`
+	major=`echo $ver | cut -d'.' -f1`
+	minor=`echo $ver | cut -d'.' -f2`
+
+	can_build=0
+	if ([ "$major" -ge "4" ] && [ "$minor" -ge "7" ]) || [ "$major" -ge "5" ] ; then
+		can_build=1
+	else
+		# detect suitable version
+		vers=(4.7 4.8 4.9 5.1 5.2)
+		for v in ${vers[@]} ; do
+			if which gcc-$v > /dev/null ; then
+				GCC=gcc-$v
+				GXX=g++-$v
+				can_build=1
+				break
+			fi
+		done
+	fi
+
+	if [ "$can_build" = "1" ] ; then
+		echo "Select ${GCC}/${GXX} for building clang"
+	else
+		echo "Your gcc version ($ver) is too old, please upgrade to 4.7+"
+		exit 1
+	fi
+}
 #
 ###############################################################################
 #
@@ -691,51 +731,8 @@ if [ "${_WITH_GDB}" = "1" ]; then
 fi
 
 if [ "${_BUILD_CLANG}" = "1" ] ; then
-
-	can_build=1
-	if ! which gcc > /dev/null ; then
-		echo "No gcc found"
-		can_build=0
-	fi
-
-	if ! which g++ > /dev/null ; then
-		echo "No g++ found"
-		can_build=0
-	fi
-
-	v=`gcc --version | grep ^gcc | sed 's/^.* //g'`
-	major=`echo $v | cut -d'.' -f1`
-	minor=`echo $v | cut -d'.' -f2`
-
-	if ([ "$major" -ge "4" ] && [ "$minor" -ge "7" ]) || [ "$major" -ge "5" ] ; then
-		can_build=1
-	else
-		can_build=0
-		found=0
-		# detect suitable version
-		vers=(4.7 4.8 4.9 5.1 5.2)
-		for v in ${vers[@]} ; do
-			if which gcc-$v > /dev/null ; then
-				_GCC=gcc-$v
-				_GXX=g++-$v
-				found=1
-				break
-			fi
-		done
-
-		if [ "$found" = "1" ] ; then
-			can_build=1
-			echo "Select ${_GCC}/${_GXX} for building clang"
-		else
-			echo "Your gcc version ($v) is too old, please upgrade to 4.7+"
-		fi
-	fi
-
-	if [ "$can_build" = "1" ] ; then
-		build_clang
-	else
-		echo "Can't build clang without suitable gcc version"
-	fi
+	precheck
+	build_clang
 fi
 
 do_link

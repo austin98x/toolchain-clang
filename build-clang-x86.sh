@@ -135,7 +135,7 @@ function precheck()
 #
 function build_gawk()
 {
-	_VER=4.1.0
+	_VER=${_GAWK_VER}
 	_PACKAGE=gawk-${_VER}.tar.xz
 
 	dir="${BLDDIR}/gawk"
@@ -162,7 +162,7 @@ function build_gawk()
 #
 function build_glibc()
 {
-	_VER=2.13
+	_VER=${_GLIBC_VER}
 	_PACKAGE=glibc-${_VER}.tar.xz
 
 	dir="${BLDDIR}/glibc"
@@ -214,7 +214,7 @@ function build_clang()
 		return
 	fi
 
-	_VER=${CLANG_VER}
+	_VER=${_CLANG_VER}
 	_PACKAGE_LLVM=llvm-${_VER}.src.tar.xz
 	_PACKAGE_CFE=cfe-${_VER}.src.tar.xz
 	_PACKAGE_CRT=compiler-rt-${_VER}.src.tar.xz
@@ -255,7 +255,7 @@ function build_libcxx()
 		return
 	fi
 
-	_VER=${CLANG_VER}
+	_VER=${_CLANG_VER}
 	_PACKAGE=libcxx-${_VER}.src.tar.xz
 	_URL=${LLVM_URL}/${_VER}
 
@@ -331,7 +331,7 @@ function build_libcxxabi()
 		return
 	fi
 
-	_VER=${CLANG_VER}
+	_VER=${_CLANG_VER}
 	_PACKAGE=libcxxabi-${_VER}.src.tar.xz
 	_URL=${LLVM_URL}/${_VER}
 
@@ -380,7 +380,9 @@ LLVM_URL=http://llvm.org/releases
 
 BUILD_LIBC=0
 
-CLANG_VER=3.7.1 #default to 3.7.1
+_GLIBC_VER=2.13
+_GAWK_VER=4.1.0
+_CLANG_VER=3.7.1 #default to 3.7.1
 
 while getopts p:c:v:u flag; do
 	case $flag in
@@ -391,7 +393,7 @@ while getopts p:c:v:u flag; do
 			BUILD_LIBC=1
 			;;
 		v)
-			CLANG_VER=$OPTARG
+			_CLANG_VER=$OPTARG
 			;;
 		u)
 			uninstall
